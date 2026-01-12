@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timer Trời Đêm - Tập Trung & Đồng Hồ</title>
+    <title>Vừa chill Vừa học bài nhé</title>
     <style>
         body {
             margin: 0;
@@ -45,9 +45,7 @@
             transition: all 0.3s;
         }
 
-        #mode-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
+        #mode-toggle:hover { background: rgba(255, 255, 255, 0.3); }
 
         #weather {
             font-size: 1.5rem;
@@ -57,17 +55,7 @@
             pointer-events: none;
         }
 
-        /* Sao lấp lánh & sao băng giữ nguyên */
-        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-        .star { position: absolute; background: white; border-radius: 50%; opacity: 0; animation: twinkle 6s infinite alternate; box-shadow: 0 0 8px white; }
-        @keyframes twinkle { 0% { opacity: 0.25; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.15); } 100% { opacity: 0.35; transform: scale(0.85); } }
-
-        .meteor { position: absolute; width: 4px; height: 220px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, #ffffff 8%, #d0e8ff 25%, #a0d0ff 45%, #7090ff 65%, rgba(100,140,255,0) 100%); box-shadow: 0 0 40px #ffffff, 0 0 80px #c0e0ff, 0 0 120px #80b0ff, 0 0 160px #6080ff; border-radius: 50% 50% 0 0 / 100% 100% 0 0; opacity: 0; animation: meteor-fall linear forwards; pointer-events: none; }
-        @keyframes meteor-fall { 0% { opacity: 1; transform: translate(-50vw, -150vh) rotate(45deg); } 100% { opacity: 0; transform: translate(150vw, 150vh) rotate(45deg); } }
-
-        #bg-music { position: absolute; width: 1px; height: 1px; top: -9999px; left: -9999px; }
-
-        #music-toggle {
+        #music-btn {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -83,7 +71,65 @@
             transition: all 0.3s;
         }
 
-        #music-toggle:hover { background: rgba(255, 255, 255, 0.3); }
+        #music-btn:hover { background: rgba(255, 255, 255, 0.3); }
+
+        #music-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+        }
+
+        #music-popup {
+            background: rgba(30, 30, 50, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 30px rgba(100, 150, 255, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        #music-popup input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 1px solid #555;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 16px;
+        }
+
+        #music-popup button {
+            padding: 12px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        #play-btn { background: #4CAF50; color: white; }
+        #play-btn:hover { background: #45a049; }
+
+        #close-btn { background: #f44336; color: white; }
+        #close-btn:hover { background: #da190b; }
+
+        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0; animation: twinkle 6s infinite alternate; box-shadow: 0 0 8px white; }
+        @keyframes twinkle { 0% { opacity: 0.25; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.15); } 100% { opacity: 0.35; transform: scale(0.85); } }
+
+        .meteor { position: absolute; width: 4px; height: 220px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, #ffffff 8%, #d0e8ff 25%, #a0d0ff 45%, #7090ff 65%, rgba(100,140,255,0) 100%); box-shadow: 0 0 40px #ffffff, 0 0 80px #c0e0ff, 0 0 120px #80b0ff, 0 0 160px #6080ff; border-radius: 50% 50% 0 0 / 100% 100% 0 0; opacity: 0; animation: meteor-fall linear forwards; pointer-events: none; }
+        @keyframes meteor-fall { 0% { opacity: 1; transform: translate(-50vw, -150vh) rotate(45deg); } 100% { opacity: 0; transform: translate(150vw, 150vh) rotate(45deg); } }
+
+        #music-player { position: absolute; width: 1px; height: 1px; top: -9999px; left: -9999px; }
     </style>
 </head>
 <body>
@@ -91,39 +137,39 @@
     <div id="timer">00:00:00</div>
     <div id="weather">Đang tải thời tiết...</div>
 
-    <!-- Nhạc nền -->
-    <iframe 
-        id="bg-music"
-        src="https://www.youtube.com/embed/s0id4i-pjm8?autoplay=1&mute=1&loop=1&playlist=s0id4i-pjm8&controls=0&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1"
-        frameborder="0"
-        allow="autoplay; encrypted-media"
-        allowfullscreen>
-    </iframe>
+    <button id="music-btn">Chọn Nhạc</button>
 
-    <!-- Nút bật nhạc -->
-    <button id="music-toggle">Bật Nhạc</button>
+    <div id="music-overlay">
+        <div id="music-popup">
+            <h2>Chọn Nhạc Nền</h2>
+            <p>Dán link YouTube hoặc SoundCloud:</p>
+            <input type="text" id="music-link" placeholder="https://youtu.be/... hoặc https://soundcloud.com/...">
+            <div>
+                <button id="play-btn">Phát Nhạc</button>
+                <button id="close-btn">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <iframe id="music-player" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
     <div class="stars"></div>
 
     <script>
-        // === Timer & Mode Toggle ===
+        // Timer & Mode Toggle
         const timerEl = document.getElementById('timer');
         const toggleBtn = document.getElementById('mode-toggle');
-        const weatherEl = document.getElementById('weather');
-
-        const startTime = Date.now(); // Thời điểm load trang - dùng để đếm giờ học liên tục
-        let isStudyMode = true; // true: đếm giờ học, false: đồng hồ Hà Nội
+        const startTime = Date.now();
+        let isStudyMode = true;
 
         function updateTimer() {
             if (isStudyMode) {
-                // Đếm giờ học: tiếp tục từ lúc load trang (không reset)
                 const elapsed = Date.now() - startTime;
                 const h = Math.floor(elapsed / 3600000).toString().padStart(2, '0');
                 const m = Math.floor((elapsed % 3600000) / 60000).toString().padStart(2, '0');
                 const s = Math.floor((elapsed % 60000) / 1000).toString().padStart(2, '0');
                 timerEl.textContent = `${h}:${m}:${s}`;
             } else {
-                // Đồng hồ 24h Hà Nội
                 const now = new Date();
                 const hanoiTime = now.toLocaleTimeString('vi-VN', {
                     timeZone: 'Asia/Ho_Chi_Minh',
@@ -135,20 +181,15 @@
                 timerEl.textContent = hanoiTime;
             }
         }
-
         setInterval(updateTimer, 200);
 
         toggleBtn.addEventListener('click', () => {
             isStudyMode = !isStudyMode;
-            if (isStudyMode) {
-                toggleBtn.textContent = 'Chuyển sang Đồng hồ Hà Nội';
-            } else {
-                toggleBtn.textContent = 'Chuyển sang Đếm giờ học';
-            }
-            updateTimer(); // cập nhật ngay lập tức
+            toggleBtn.textContent = isStudyMode ? 'Chuyển sang Đồng hồ Hà Nội' : 'Chuyển sang Đếm giờ học';
+            updateTimer();
         });
 
-        // === Sao lấp lánh ===
+        // Sao lấp lánh & sao băng
         const starsContainer = document.querySelector('.stars');
         for (let i = 0; i < 700; i++) {
             const star = document.createElement('div');
@@ -162,7 +203,6 @@
             starsContainer.appendChild(star);
         }
 
-        // === Sao băng ===
         function createMeteor() {
             const meteor = document.createElement('div');
             meteor.classList.add('meteor');
@@ -179,43 +219,104 @@
 
         function spawnMeteor() {
             createMeteor();
-            const nextDelay = Math.random() * 4000 + 2000;
-            setTimeout(spawnMeteor, nextDelay);
+            setTimeout(spawnMeteor, Math.random() * 4000 + 2000);
         }
         spawnMeteor();
 
-        // === Nhạc toggle ===
-        const musicToggle = document.getElementById('music-toggle');
-        const iframe = document.getElementById('bg-music');
-        let isMuted = true;
+        // Chọn nhạc popup
+        const musicBtn = document.getElementById('music-btn');
+        const overlay = document.getElementById('music-overlay');
+        const musicLinkInput = document.getElementById('music-link');
+        const playBtn = document.getElementById('play-btn');
+        const closeBtn = document.getElementById('close-btn');
+        const player = document.getElementById('music-player');
 
-        musicToggle.addEventListener('click', () => {
-            if (isMuted) {
-                iframe.src = iframe.src.replace('&mute=1', '&mute=0');
-                musicToggle.textContent = 'Tắt Nhạc';
-            } else {
-                iframe.src = iframe.src.replace('&mute=0', '&mute=1');
-                musicToggle.textContent = 'Bật Nhạc';
-            }
-            isMuted = !isMuted;
+        musicBtn.addEventListener('click', () => {
+            overlay.style.display = 'flex';
+            musicLinkInput.focus();
         });
 
-        // === Thời tiết ===
-        async function fetchWeather() {
-            try {
-                const geoRes = await fetch('https://ipapi.co/json/');
-                const geoData = await geoRes.json();
+        closeBtn.addEventListener('click', () => {
+            overlay.style.display = 'none';
+        });
 
-                if (!geoData.latitude || !geoData.longitude) {
-                    weatherEl.textContent = 'Không lấy được vị trí';
-                    return;
+        playBtn.addEventListener('click', () => {
+            let url = musicLinkInput.value.trim();
+            if (!url) return alert('Vui lòng dán link!');
+
+            let embedSrc = '';
+
+            // Parse YouTube - regex siêu linh hoạt
+            const ytRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be|youtube-nocookie\.com|m\.youtube\.com)\/(?:embed\/|v\/|watch\?(?:.*&)?v=|watch\?.*v=|shorts\/|live\/|v\/)?([a-zA-Z0-9_-]{11})/i;
+            const ytMatch = url.match(ytRegex);
+            if (ytMatch && ytMatch[1]) {
+                const videoId = ytMatch[1];
+                embedSrc = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1`;
+            }
+
+            // SoundCloud
+            if (url.includes('soundcloud.com')) {
+                embedSrc = `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false`;
+            }
+
+            if (embedSrc) {
+                player.src = embedSrc;
+                overlay.style.display = 'none';
+                musicLinkInput.value = '';
+                alert('Nhạc đang phát! (muted ban đầu, click trang để bật tiếng nếu cần)');
+            } else {
+                alert('Link không hợp lệ! Chỉ hỗ trợ YouTube hoặc SoundCloud.');
+            }
+        });
+
+        // Thời tiết - thêm reverse geocoding để lấy tên thành phố
+        async function fetchWeather() {
+            const weatherEl = document.getElementById('weather');
+            weatherEl.textContent = 'Đang tải thời tiết...';
+
+            try {
+                let lat, lon, city = 'Vị trí của bạn';
+
+                // Ưu tiên IP
+                try {
+                    const geoRes = await fetch('https://ipapi.is/json/');
+                    if (geoRes.ok) {
+                        const geoData = await geoRes.json();
+                        if (geoData.latitude && geoData.longitude) {
+                            lat = geoData.latitude;
+                            lon = geoData.longitude;
+                            city = geoData.city || geoData.region || 'Vị trí của bạn';
+                        }
+                    }
+                } catch (ipErr) { console.warn('IP geolocation failed:', ipErr); }
+
+                // Fallback geolocation
+                if (!lat || !lon) {
+                    const position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, {
+                            enableHighAccuracy: true,
+                            timeout: 15000,
+                            maximumAge: 0
+                        });
+                    });
+                    lat = position.coords.latitude;
+                    lon = position.coords.longitude;
+                    city = 'Vị trí hiện tại';
                 }
 
-                const lat = geoData.latitude;
-                const lon = geoData.longitude;
-                const city = geoData.city || 'Vị trí của bạn';
+                // Reverse geocoding để lấy tên thành phố chính xác (Nominatim - miễn phí, chậm nhưng ổn)
+                let cityFromGeo = 'Vị trí hiện tại';
+                try {
+                    const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`);
+                    if (revRes.ok) {
+                        const revData = await revRes.json();
+                        cityFromGeo = revData.address.city || revData.address.town || revData.address.village || revData.address.state || 'Vị trí hiện tại';
+                    }
+                } catch (revErr) { console.warn('Reverse geocoding failed:', revErr); }
 
+                // Thời tiết
                 const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&timezone=Asia%2FBangkok`);
+                if (!weatherRes.ok) throw new Error('Weather API failed');
                 const weatherData = await weatherRes.json();
 
                 const temp = weatherData.current.temperature_2m;
@@ -228,10 +329,10 @@
                 else if (code >= 80 && code <= 99) condition = 'Mưa vừa / Mưa to';
                 else condition = 'Có mây';
 
-                weatherEl.textContent = `${city} - ${temp}°C, ${condition}, gió ${wind} km/h`;
+                weatherEl.textContent = `${cityFromGeo} - ${temp}°C, ${condition}, gió ${wind} km/h`;
             } catch (err) {
-                weatherEl.textContent = 'Lỗi tải thời tiết';
-                console.error(err);
+                console.error('Weather error:', err);
+                weatherEl.textContent = 'Thời tiết không khả dụng (giới hạn API, mạng, hoặc chưa cho phép vị trí)';
             }
         }
 
