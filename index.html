@@ -84,7 +84,7 @@
             }
         }
 
-        /* Ẩn iframe nhạc hoàn toàn */
+        /* Ẩn iframe nhạc */
         #bg-music {
             position: absolute;
             width: 1px;
@@ -92,12 +92,33 @@
             top: -9999px;
             left: -9999px;
         }
+
+        /* Nút bật/tắt nhạc */
+        #music-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 100;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+
+        #music-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
     </style>
 </head>
 <body>
     <div id="timer">00:00:00</div>
 
-    <!-- Nhạc nền YouTube - Đã fix src + parameters -->
+    <!-- Nhạc nền YouTube - tự phát muted -->
     <iframe 
         id="bg-music"
         src="https://www.youtube.com/embed/s0id4i-pjm8?autoplay=1&mute=1&loop=1&playlist=s0id4i-pjm8&controls=0&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1"
@@ -106,10 +127,13 @@
         allowfullscreen>
     </iframe>
 
+    <!-- Nút toggle nhạc -->
+    <button id="music-toggle">Bật Nhạc</button>
+
     <div class="stars"></div>
 
     <script>
-        // Timer reset khi load trang
+        // Timer
         const startTime = Date.now();
         const timerElement = document.getElementById('timer');
 
@@ -136,7 +160,7 @@
             starsContainer.appendChild(star);
         }
 
-        // Sao băng chéo chậm lần lượt
+        // Sao băng
         function createMeteor() {
             const meteor = document.createElement('div');
             meteor.classList.add('meteor');
@@ -144,7 +168,7 @@
             meteor.style.top = (Math.random() * 30 - 30) + '%';
             const angle = 35 + Math.random() * 20;
             meteor.style.transform = `rotate(${angle}deg)`;
-            const duration = (Math.random() * 4 + 6) + 's'; // 6-10s chậm
+            const duration = (Math.random() * 4 + 6) + 's';
             meteor.style.animationDuration = duration;
             meteor.style.opacity = 0.85 + Math.random() * 0.15;
             document.body.appendChild(meteor);
@@ -153,10 +177,28 @@
 
         function spawnMeteor() {
             createMeteor();
-            const nextDelay = Math.random() * 4000 + 2000; // 2-6s lần lượt
+            const nextDelay = Math.random() * 4000 + 2000;
             setTimeout(spawnMeteor, nextDelay);
         }
         spawnMeteor();
+
+        // Toggle nhạc (unmute khi click)
+        const toggleBtn = document.getElementById('music-toggle');
+        const iframe = document.getElementById('bg-music');
+        let isMuted = true;
+
+        toggleBtn.addEventListener('click', () => {
+            if (isMuted) {
+                // Bật tiếng
+                iframe.src = iframe.src.replace('&mute=1', '&mute=0');
+                toggleBtn.textContent = 'Tắt Nhạc';
+            } else {
+                // Tắt tiếng
+                iframe.src = iframe.src.replace('&mute=0', '&mute=1');
+                toggleBtn.textContent = 'Bật Nhạc';
+            }
+            isMuted = !isMuted;
+        });
     </script>
 </body>
 </html>
