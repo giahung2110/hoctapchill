@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer Trời Đêm - Sao Băng Chéo & Nhạc Chill</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000000;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #ffffff;
+        }
+
+        #timer {
+            font-size: 7rem;
+            font-weight: bold;
+            text-shadow: 0 0 50px rgba(255, 255, 255, 0.9), 0 0 100px rgba(80, 150, 255, 0.7);
+            letter-spacing: 12px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Sao lấp lánh */
+        .stars {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 6s infinite alternate;
+            box-shadow: 0 0 8px white;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.25; transform: scale(0.7); }
+            50% { opacity: 1; transform: scale(1.15); }
+            100% { opacity: 0.35; transform: scale(0.85); }
+        }
+
+        /* Sao băng chéo chậm */
+        .meteor {
+            position: absolute;
+            width: 4px;
+            height: 220px;
+            background: linear-gradient(to bottom, 
+                rgba(255,255,255,0) 0%, 
+                #ffffff 8%, 
+                #d0e8ff 25%, 
+                #a0d0ff 45%, 
+                #7090ff 65%, 
+                rgba(100,140,255,0) 100%);
+            box-shadow: 
+                0 0 40px #ffffff,
+                0 0 80px #c0e0ff,
+                0 0 120px #80b0ff,
+                0 0 160px #6080ff;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            opacity: 0;
+            animation: meteor-fall linear forwards;
+            pointer-events: none;
+        }
+
+        @keyframes meteor-fall {
+            0% {
+                opacity: 1;
+                transform: translate(-50vw, -150vh) rotate(45deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(150vw, 150vh) rotate(45deg);
+            }
+        }
+
+        /* Ẩn iframe nhạc hoàn toàn */
+        #bg-music {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            top: -9999px;
+            left: -9999px;
+        }
+    </style>
+</head>
+<body>
+    <div id="timer">00:00:00</div>
+
+    <!-- Nhạc nền YouTube - Đã fix src + parameters -->
+    <iframe 
+        id="bg-music"
+        src="https://www.youtube.com/embed/s0id4i-pjm8?autoplay=1&mute=1&loop=1&playlist=s0id4i-pjm8&controls=0&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1"
+        frameborder="0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
+    </iframe>
+
+    <div class="stars"></div>
+
+    <script>
+        // Timer reset khi load trang
+        const startTime = Date.now();
+        const timerElement = document.getElementById('timer');
+
+        function updateTimer() {
+            const elapsed = Date.now() - startTime;
+            const h = Math.floor(elapsed / 3600000).toString().padStart(2, '0');
+            const m = Math.floor((elapsed % 3600000) / 60000).toString().padStart(2, '0');
+            const s = Math.floor((elapsed % 60000) / 1000).toString().padStart(2, '0');
+            timerElement.textContent = `${h}:${m}:${s}`;
+        }
+        setInterval(updateTimer, 200);
+
+        // Sao lấp lánh
+        const starsContainer = document.querySelector('.stars');
+        for (let i = 0; i < 700; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const size = Math.random() * 3.2 + 0.4;
+            star.style.width = star.style.height = size + 'px';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 15 + 's';
+            star.style.animationDuration = (Math.random() * 6 + 4) + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // Sao băng chéo chậm lần lượt
+        function createMeteor() {
+            const meteor = document.createElement('div');
+            meteor.classList.add('meteor');
+            meteor.style.left = (Math.random() * 40 - 20) + '%';
+            meteor.style.top = (Math.random() * 30 - 30) + '%';
+            const angle = 35 + Math.random() * 20;
+            meteor.style.transform = `rotate(${angle}deg)`;
+            const duration = (Math.random() * 4 + 6) + 's'; // 6-10s chậm
+            meteor.style.animationDuration = duration;
+            meteor.style.opacity = 0.85 + Math.random() * 0.15;
+            document.body.appendChild(meteor);
+            setTimeout(() => meteor.remove(), 15000);
+        }
+
+        function spawnMeteor() {
+            createMeteor();
+            const nextDelay = Math.random() * 4000 + 2000; // 2-6s lần lượt
+            setTimeout(spawnMeteor, nextDelay);
+        }
+        spawnMeteor();
+    </script>
+</body>
+</html>
